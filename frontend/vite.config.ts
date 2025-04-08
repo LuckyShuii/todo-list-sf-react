@@ -14,6 +14,10 @@ export default defineConfig({
       port: 7002,
     },
     watch: { usePolling: true },
+    allowedHosts: [
+      "http://localhost:7002/",
+      "frontend"
+    ]
   },
   css: {
     preprocessorOptions: {
