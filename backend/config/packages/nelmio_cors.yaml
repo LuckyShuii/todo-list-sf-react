@@ -1,0 +1,14 @@
+nelmio_cors:
+  defaults:
+    allow_origin: ["http://localhost:7002"]
+    allow_headers: ["Content-Type", "Authorization"]
+    allow_methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+    max_age: 3600
+    allow_credentials: true
+  paths:
+    "^/":
+      allow_origin: ["http://localhost:7002"]
+      allow_headers: ["Content-Type", "Authorization"]
+      allow_methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
+      max_age: 3600
+      allow_credentials: true
