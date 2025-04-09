@@ -26,7 +26,7 @@ const RegisterPage: React.FC = () => {
   };
 
   return <>
-    <div>
+    <div className='w-[15rem]'>
       <h1 className='text-center'>Register</h1>
       <Separator className="my-4 mb-8" />
 
@@ -51,7 +51,7 @@ const RegisterPage: React.FC = () => {
       <Button className='w-full' onClick={form.handleSubmit(onSubmit)}>
         Register
       </Button>
-      <p>Already have an account? <a href="/login" className='text-blue-500 hover:underline'>Login</a></p>
+      <p className='w-full text-center'>Already have an account? <a href="/login" className='text-blue-500 hover:underline'>Log in</a></p>
     </div>
   </>
 };
