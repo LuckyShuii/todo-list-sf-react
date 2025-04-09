@@ -4,8 +4,6 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table"
 import { Button } from '@/components/ui/button';
@@ -13,9 +11,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import axios from 'axios';
 import type { TaskType } from '@/types/taskType';
 import TableHeaderComponent from '@/components/tasks/TableHeader';
+import DeleteDialog from '@/components/tasks/DeleteDialog';
+import CreateEditDialog from '@/components/tasks/CreateEditDialog';
 
 const TasksPage: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
+  const [taskToEdit, setTaskToEdit] = useState<TaskType | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     getAllTasks();
@@ -28,40 +30,55 @@ const TasksPage: React.FC = () => {
     await handleStatusChange(updatedTasks[index].id);
   }
 
-  const deleteTask = async (id: number) => {
-    try {
-      await axios.delete(`http://localhost:7002/api/task/delete/${id}`);
-      setTasks(tasks.filter(task => task.id !== id));
-    } catch (error) {
-      console.error('Error deleting task:', error);
-    }
-  }
-
   const handleStatusChange = async (id: number) => {
     try {
-      const response = await axios.put(`http://localhost:7002/api/task/edit/status/${id}`);
+      const response = await axios.put(`http://localhost:7002/api/task/status/${id}`);
       console.log("done", response.data);
     } catch (error) {
       console.error('Error updating task status:', error);
     }
   }
 
+  const handleDeleteTask = (id: number) => {
+    setTasks(tasks.filter((task: TaskType) => task.id !== id));
+  }
+
   const getAllTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:7002/api/task/all');
+      const response = await axios.get('http://localhost:7002/api/task/');
       setTasks(response.data.tasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
   }
 
+  const handleCreatedTask = (task: TaskType) => {
+    setTasks([...tasks, task]);
+    setTaskToEdit(null);
+  }
+
+  const handleEditTask = (task: TaskType) => {
+    setTaskToEdit(task);
+    setDialogOpen(true);
+  }
+
+  const handleEditedTask = (task: TaskType) => {
+    const updatedTasks = tasks.map((currentTask: TaskType) => currentTask.id === task.id ? task : currentTask);
+    setTasks(updatedTasks);
+  }
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setTaskToEdit(null);
+  }
+
   return <>
     <div className='flex w-full justify-end mb-8'>
-      <Button className="w-[8rem]">Create new task</Button>
+      <Button className="w-[8rem] ml-2" onClick={() => setDialogOpen(true)}>Create</Button>
     </div>
     <Table>
-      <TableCaption className='mt-8'>A list of your tasks</TableCaption>
-      <TableHeaderComponent />  
+      <TableCaption className='mt-8'>A list of your tasks - <a href="/login" className='text-blue-500 hover:underline'>log out</a></TableCaption>
+      <TableHeaderComponent />
       <TableBody>
         {tasks.map((task, idx) => (
           <TableRow key={idx}>
@@ -70,13 +87,15 @@ const TasksPage: React.FC = () => {
             <TableCell>{task.importance}</TableCell>
             <TableCell>{task.limitDate}</TableCell>
             <TableCell>
-              <Button className="w-[3.5rem]">Edit</Button>
-              <Button className="w-[3.5rem] ml-2" variant='destructive' onClick={() => deleteTask(task.id)}>Delete</Button>
+              <Button className="w-[3.5rem]" onClick={() => handleEditTask(task)}>Edit</Button>
+              <DeleteDialog task={task} handleDeleteTask={handleDeleteTask} />
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
+
+    <CreateEditDialog handleCreatedTask={handleCreatedTask} taskToEdit={taskToEdit} handleCloseDialog={handleCloseDialog} dialogOpen={dialogOpen} handleEditedTask={handleEditedTask} />
   </>;
 };
 
