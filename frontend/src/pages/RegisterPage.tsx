@@ -18,6 +18,8 @@ const RegisterPage: React.FC = () => {
     console.log("sending data: ", data)
     try {
       await axios.post('/api/user/register', data);
+      console.log('Registration successful!');
+      window.location.href = '/login'; 
     } catch (error) {
       console.error('Registration error:', error);
     }

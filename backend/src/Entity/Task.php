@@ -93,4 +93,16 @@ class Task
 
         return $this;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'importance' => $this->getImportance(),
+            'isDone' => $this->isDone(),
+            'limitDate' => $this->getLimitDate() ? $this->getLimitDate()->format('Y-m-d H:i:s') : null,
+            'userId' => $this->getUserId() ? $this->getUserId()->getId() : null,
+        ];
+    }
 }
